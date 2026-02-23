@@ -1,159 +1,127 @@
-import { MdExpandMore } from "react-icons/md";
+import { useState } from "react";
 import "../styles/dashboard.css";
 import LiveSessionCard from "../components/LiveSessionCard";
 import CalendarWidget from "../components/CalendarWidget";
 import AssignmentItem from "../components/AssignmentItem";
 import QuizItem from "../components/QuizItem";
-import NotificationItem from "../components/NotificationItem";
 import ActivityItem from "../components/ActivityItem";
 
+const assignments = [
+  { id: "Assignment ID", status: "overdue" },
+  { id: "Assignment: 1", subject: "Introduction to AI", dueDate: "27 Feb 26 (Friday)", submissionRate: "28/45 (62%)", status: "due", defaultExpanded: true },
+  { id: "Assignment: 2", subject: "Modern Art History", dueDate: "06 Mar 26 (Friday)", status: "due" },
+  { id: "Assignment: 3", subject: "Quantum Physics Fundamentals", dueDate: "13 Mar 26 (Friday)", status: "overdue" },
+  { id: "Assignment: 4", subject: "Global Economic Trends", dueDate: "20 Mar 26 (Friday)", status: "due" },
+];
+
+const quizzes = [
+  { id: "Quiz ID", status: "overdue" },
+  { id: "Quiz: 1", subject: "Modern Art History", dueDate: "06 Mar 26 (Friday)", submissionRate: "28/45 (62%)", avgScore: "78%", highest: "95%", lowest: "45%", status: "due", defaultExpanded: true },
+  { id: "Quiz: 2", subject: "Quantum Physics Fundamentals", dueDate: "13 Mar 26 (Friday)", status: "due" },
+  { id: "Quiz: 3", status: "overdue" },
+];
+
 export default function TeacherDashboard() {
+  const [assignFilter, setAssignFilter] = useState(null); // null | "due" | "overdue"
+  const [quizFilter, setQuizFilter] = useState(null);
+
+  const toggleFilter = (current, value, setter) => {
+    setter(current === value ? null : value);
+  };
+
+  const filteredAssignments = assignFilter
+    ? assignments.filter(a => a.status === assignFilter)
+    : assignments;
+
+  const filteredQuizzes = quizFilter
+    ? quizzes.filter(q => q.status === quizFilter)
+    : quizzes;
+
   return (
     <div className="dashboard">
 
       {/* TOP ROW */}
       <div className="dash-top">
         <div className="dash-live-section">
-          <h3 className="dash-section-title">Upcoming Live Sessions</h3>
+          <div className="dash-live-header">
+            <span className="dash-section-title">Upcoming Live Sessions</span>
+            <span className="dash-remaining">4 Classes (Remaining classes)</span>
+          </div>
           <div className="dash-live-row">
-            <LiveSessionCard
-              subject="Subject Name"
-              topic="This Topic"
-              startsIn="Time:"
-              timing="Session Timing"
-            />
-            <LiveSessionCard
-              subject="Biology 101"
-              topic="Introduction to Genetics"
-              startsIn="15min/1day"
-              timing="10:00 AM - 11:30 AM"
-            />
-            <LiveSessionCard
-              subject="Art History"
-              topic="Introduction to Modernism"
-              startsIn="30 min"
-              timing="1:00 PM - 2:30 PM"
-            />
+            <LiveSessionCard subject="Subject Name" topic="Title/Topic" startsIn="Starts in [time]" timing="Session Timing" />
+            <LiveSessionCard subject="Biology 101" topic="Introduction to Genetics" startsIn="Starts in 15 minutes" timing="10:00 AM - 11:30 AM" />
+            <LiveSessionCard subject="Art History" topic="Renaissance to Modern" startsIn="Starts in 30 min" timing="1:00 PM - 2:30 PM" />
           </div>
         </div>
-
         <CalendarWidget />
       </div>
 
       {/* BOTTOM ROW */}
       <div className="dash-bottom">
 
-        {/* Left Column - Assignment + Quiz */}
-        <div className="dash-left-col">
-          <div className="dash-card">
-            <div className="dash-card-header">
-              <h4>Assignment</h4>
-              <MdExpandMore className="dash-chevron" />
-            </div>
-            <div className="dash-card-body">
-              <AssignmentItem type="danger" />
-              <AssignmentItem type="danger" />
-              <AssignmentItem type="warning" />
-              <AssignmentItem type="warning" />
-              <AssignmentItem type="success" />
-            </div>
-          </div>
-
-          <div className="dash-card">
-            <div className="dash-card-header">
-              <h4>Quiz</h4>
-              <MdExpandMore className="dash-chevron" />
-            </div>
-            <div className="dash-card-body">
-              <QuizItem type="danger" />
-              <QuizItem type="warning" />
-              <QuizItem type="success" />
-            </div>
-          </div>
-        </div>
-
-        {/* Center Column - Notifications */}
-        <div className="dash-card dash-notif-card">
+        {/* Column 1 — Assignments */}
+        <div className="dash-card">
           <div className="dash-card-header">
-            <h4>Notification</h4>
-            <select className="dash-filter">
-              <option>All</option>
-            </select>
+            <h4>Assignments</h4>
+            <div className="dash-pills">
+              <span
+                className={`dash-pill pill-due ${assignFilter === "due" ? "pill-active" : ""}`}
+                onClick={() => toggleFilter(assignFilter, "due", setAssignFilter)}
+              >Due</span>
+              <span
+                className={`dash-pill pill-overdue ${assignFilter === "overdue" ? "pill-active" : ""}`}
+                onClick={() => toggleFilter(assignFilter, "overdue", setAssignFilter)}
+              >Over Due</span>
+            </div>
           </div>
           <div className="dash-card-body">
-            <NotificationItem
-              title="New Assignment Updated"
-              barColor="green"
-              lines={["Subject Name: Topic/Title", "Teacher: Teacher's Name", "Due Date: 20 Feb 26 (Friday)"]}
-            />
-            <NotificationItem
-              title="New Live Session Updated"
-              barColor="teal"
-              lines={["Subject Name", "Teacher: Teacher's Name", "20 Feb 26 (Friday)", "10:00 AM - 11:30 AM"]}
-            />
-            <NotificationItem
-              title="New Assignment Updated"
-              barColor="red"
-              lines={["Subject Name: Topic/Title", "Teacher: Teacher's Name", "Due Date: 20 Feb 26 (Friday)"]}
-            />
-            <NotificationItem
-              title="New Quiz Updated"
-              barColor="purple"
-              lines={["Subject Name: Topic/Title", "Teacher: Teacher's Name", "Due Date: 20 Feb 26 (Friday)"]}
-            />
-            <NotificationItem
-              title="New Live Session Updated"
-              barColor="teal"
-              lines={["Subject Name", "Teacher: Teacher's Name", "20 Feb 26 (Friday)", "10:00 AM - 11:30 AM"]}
-            />
+            {filteredAssignments.map((a, i) => (
+              <AssignmentItem key={i} {...a} />
+            ))}
+            {filteredAssignments.length === 0 && (
+              <p className="dash-empty">No items</p>
+            )}
           </div>
         </div>
 
-        {/* Right Column - Activity Timeline */}
-        <div className="dash-card dash-activity-card">
+        {/* Column 2 — Quiz */}
+        <div className="dash-card">
+          <div className="dash-card-header">
+            <h4>Quiz</h4>
+            <div className="dash-pills">
+              <span
+                className={`dash-pill pill-due ${quizFilter === "due" ? "pill-active" : ""}`}
+                onClick={() => toggleFilter(quizFilter, "due", setQuizFilter)}
+              >Due</span>
+              <span
+                className={`dash-pill pill-overdue ${quizFilter === "overdue" ? "pill-active" : ""}`}
+                onClick={() => toggleFilter(quizFilter, "overdue", setQuizFilter)}
+              >Over Due</span>
+            </div>
+          </div>
+          <div className="dash-card-body">
+            {filteredQuizzes.map((q, i) => (
+              <QuizItem key={i} {...q} />
+            ))}
+            {filteredQuizzes.length === 0 && (
+              <p className="dash-empty">No items</p>
+            )}
+          </div>
+        </div>
+
+        {/* Column 3 — Activity Timeline */}
+        <div className="dash-card">
           <div className="dash-card-header">
             <h4>8 Jan 2026</h4>
-            <select className="dash-filter">
-              <option>All</option>
-            </select>
+            <select className="dash-filter"><option>All</option></select>
           </div>
           <div className="dash-card-body">
-            <ActivityItem
-              date="21/01/2026 (Wed)"
-              label="Live Session"
-              labelColor="teal"
-              lines={["Mathematics chapter 1: algebra", "Teacher: Sir Zothana", "Time: 1:00pm to 2:00pm"]}
-            />
-            <ActivityItem
-              date="21/01/2026 (Wed)"
-              label="Due Assignment"
-              labelColor="yellow"
-              lines={["Mathematics chapter 1: algebra", "Teacher: Sir Zothana"]}
-            />
-            <ActivityItem
-              date="21/01/2026 (Wed)"
-              label="Live Session"
-              labelColor="teal"
-              lines={["English chapter 1: Poem", "Teacher: Miss Ruatfeli", "Time: 10:00am to 12:00pm"]}
-            />
-            <ActivityItem
-              date="21/01/2026 (Wed)"
-              label="Quiz"
-              labelColor="purple"
-              lines={["Science: chapter 1: Chemistry", "Teacher: Sir Rasta", "Teacher: Miss Ruatfeli", "Due Date: 23/01/26 (Friday)"]}
-            />
-            <ActivityItem
-              date="23/01/2026 (Fri)"
-              label="Due Assignment"
-              labelColor="yellow"
-              lines={["Mathematics chapter 1: algebra", "Teacher: Sir Zothana"]}
-            />
-            <ActivityItem
-              date="29/01/2026 (Thu)"
-              label="Due Assignment"
-              labelColor="yellow"
-              lines={["Mathematics chapter 1: algebra", "Teacher: Sir Zothana"]}
-            />
+            <ActivityItem date="21/01/2026 (Wed)" label="Live Session" labelColor="teal" lines={["Mathematics chapter 1: algebra", "Teacher: Sir Zothana", "Time: 1:00pm to 2:00pm"]} />
+            <ActivityItem date="21/01/2026 (Wed)" label="Due Assignment" labelColor="yellow" lines={["Mathematics chapter 1: algebra", "Teacher: Sir Zothana"]} />
+            <ActivityItem date="21/01/2026 (Wed)" label="Live Session" labelColor="teal" lines={["English chapter 1: Poem", "Teacher: Miss Ruatfeli", "Time: 10:00am to 12:00pm"]} />
+            <ActivityItem date="21/01/2026 (Wed)" label="Quiz" labelColor="purple" lines={["Science: chapter 1: Chemistry", "Teacher: Sir Rasta", "Due Date: 23/01/26 (Friday)"]} />
+            <ActivityItem date="23/01/2026 (Fri)" label="Due Assignment" labelColor="yellow" lines={["Mathematics chapter 1: algebra", "Teacher: Sir Zothana"]} />
+            <ActivityItem date="29/01/2026 (Thu)" label="Due Assignment" labelColor="yellow" lines={["Mathematics chapter 1: algebra", "Teacher: Sir Zothana"]} />
           </div>
         </div>
 

@@ -23,14 +23,14 @@ export default function Sidebar() {
           <span>Dashboard</span>
         </div>
 
-        <div className="menu-item" onClick={() => navigate("/teacher/classes")}>
+        <div className="menu-item menu-label">
           <FaChalkboardTeacher />
           <span>Classes</span>
         </div>
 
         <div className="submenu">
-          <p onClick={() => navigate("/teacher/classes")}>Math (Class 8) BY23</p>
-          <p onClick={() => navigate("/teacher/classes")}>Math (Class 8) BY26</p>
+          <p onClick={() => navigate("/teacher/classes/math-8-by23")}>Math (Class 8) BY23</p>
+          <p onClick={() => navigate("/teacher/classes/math-8-by26")}>Math (Class 8) BY26</p>
         </div>
       </nav>
     </aside>

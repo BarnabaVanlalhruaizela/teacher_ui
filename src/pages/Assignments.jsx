@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IoChevronBack } from "react-icons/io5";
 import { FiSearch } from "react-icons/fi";
 import "../styles/assignments.css";
@@ -73,6 +73,8 @@ const formatDate = (dateStr) => {
 
 export default function Assignments() {
   const navigate = useNavigate();
+  const { batchId } = useParams();
+  const backPath = batchId ? `/teacher/classes/${batchId}` : "/teacher/classes";
 
   // Load user-created assignments from localStorage
   const saved = JSON.parse(localStorage.getItem("assignments") || "[]");
@@ -91,7 +93,7 @@ export default function Assignments() {
   return (
     <div className="assignments-page">
 
-      <button className="assignments-back-btn" onClick={() => navigate(-1)}>
+      <button className="assignments-back-btn" onClick={() => navigate(backPath)}>
         <IoChevronBack /> Back
       </button>
 

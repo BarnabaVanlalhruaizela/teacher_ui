@@ -40,6 +40,10 @@
   opacity: 0.9;
 }
 
+.menu-item.menu-label {
+  cursor: default;
+}
+
 .menu-item.active {
   background: #4fc3c7;
   padding-left: 10px;

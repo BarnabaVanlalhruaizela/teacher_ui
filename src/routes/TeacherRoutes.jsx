@@ -24,6 +24,8 @@ export default function TeacherRoutes() {
       <Route path="/" element={<Navigate to="/teacher/dashboard" />} />
       <Route element={<TeacherLayout />}>
         <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+
+        {/* Generic class routes (no batch) */}
         <Route path="/teacher/classes" element={<Classes />} />
         <Route path="/teacher/classes/assignments" element={<Assignments />} />
         <Route path="/teacher/classes/assignments/create" element={<CreateAssignment />} />
@@ -40,6 +42,24 @@ export default function TeacherRoutes() {
         <Route path="/teacher/classes/session-recordings" element={<SessionRecordings />} />
         <Route path="/teacher/classes/session-recordings/upload" element={<UploadRecording />} />
         <Route path="/teacher/classes/live-sessions" element={<LiveSessions />} />
+
+        {/* Batch-specific routes */}
+        <Route path="/teacher/classes/:batchId" element={<Classes />} />
+        <Route path="/teacher/classes/:batchId/assignments" element={<Assignments />} />
+        <Route path="/teacher/classes/:batchId/assignments/create" element={<CreateAssignment />} />
+        <Route path="/teacher/classes/:batchId/assignments/view" element={<AssignmentView />} />
+        <Route path="/teacher/classes/:batchId/assignments/view/submissions" element={<SubmissionView />} />
+        <Route path="/teacher/classes/:batchId/quizzes" element={<Quizzes />} />
+        <Route path="/teacher/classes/:batchId/quizzes/create" element={<CreateQuiz />} />
+        <Route path="/teacher/classes/:batchId/quizzes/view" element={<QuizView />} />
+        <Route path="/teacher/classes/:batchId/quizzes/view/submissions" element={<QuizSubmissionView />} />
+        <Route path="/teacher/classes/:batchId/quizzes/view/submissions/review" element={<QuizReviewView />} />
+        <Route path="/teacher/classes/:batchId/study-materials" element={<StudyMaterials />} />
+        <Route path="/teacher/classes/:batchId/study-materials/upload" element={<UploadMaterial />} />
+        <Route path="/teacher/classes/:batchId/study-materials/view" element={<StudyMaterialView />} />
+        <Route path="/teacher/classes/:batchId/session-recordings" element={<SessionRecordings />} />
+        <Route path="/teacher/classes/:batchId/session-recordings/upload" element={<UploadRecording />} />
+        <Route path="/teacher/classes/:batchId/live-sessions" element={<LiveSessions />} />
       </Route>
     </Routes>
   );

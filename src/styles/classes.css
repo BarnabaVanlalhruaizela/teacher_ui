@@ -2,14 +2,19 @@
 .classes-wrapper {
   background: #bcd6da;
   height: 100%;
+  overflow: hidden;
 }
 
 /* White rounded container */
 .classes-container {
   background: #f5fbfc;
   border-radius: 20px;
-  padding: 24px 28px 32px;
-  min-height: calc(100vh - 108px);
+  padding: 24px 28px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Top row */
@@ -19,7 +24,8 @@
   align-items: center;
   border-bottom: 1px solid #d5e6ea;
   padding-bottom: 12px;
-  margin-bottom: 22px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
 }
 
 .classes-top h2 {
@@ -58,18 +64,22 @@
 .classes-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
+  grid-auto-rows: 1fr;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
 }
 
 /* Card */
 .subject-card {
-  background: #f2f0ec;
+  background: #F0F0F0;
   border-radius: 12px;
-  padding: 22px 24px;
+  padding: 32px 48px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 120px;
+  align-items: flex-start;
+  box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.25);
   cursor: pointer;
 }
 
@@ -91,12 +101,13 @@
   font-size: 34px;
   font-weight: 700;
   color: #4ba7b5;
-  display: block;
   line-height: 1;
+  vertical-align: baseline;
 }
 
 /* Label */
 .subject-label {
   font-size: 12px;
   color: #4ba7b5;
+  vertical-align: baseline;
 }
