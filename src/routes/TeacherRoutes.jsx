@@ -4,7 +4,7 @@ import TeacherLayout from "../layout/TeacherLayout";
 import TeacherDashboard from "../pages/TeacherDashboard";
 import ClassesList from "../pages/ClassesList";
 import Classes from "../pages/Classes";
-
+import TeacherLiveSession from "../pages/TeacherLiveSession";
 import Assignments from "../pages/Assignments";
 import CreateAssignment from "../pages/CreateAssignment";
 import AssignmentView from "../pages/AssignmentView";
@@ -115,6 +115,10 @@ export default function TeacherRoutes() {
           path="/teacher/classes/:subjectId/live-sessions/create"
           element={<TeacherCreateLiveSession />}
         />
+        <Route
+  path="/teacher/live/:id"
+  element={<TeacherLiveSession />}
+/>
 
       </Route>
     </Routes>

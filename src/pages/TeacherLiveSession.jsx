@@ -2,53 +2,74 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { LiveKitRoom, RoomAudioRenderer } from "@livekit/components-react";
 import api from "../api/apiClient";
+
 import ClassroomUI from "../components/live/ClassroomUI";
 import TeacherControls from "../components/live/TeacherControls";
 
 export default function TeacherLiveSession() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [data, setData] = useState(null);
+
+  const [sessionData, setSessionData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!id) return;
 
+    let mounted = true;
+
     const joinSession = async () => {
       try {
+        setLoading(true);
+        setError(null);
+
         const res = await api.post(
           `/livestream/sessions/${id}/join/`
         );
-        setData(res.data);
+
+        if (mounted) {
+          setSessionData(res.data);
+        }
       } catch (err) {
-        console.error("Join failed:", err);
-        alert("Unable to join session.");
-        navigate(-1);
+        console.error("Failed to join session:", err);
+        if (mounted) {
+          setError("Unable to join session.");
+        }
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     joinSession();
-  }, [id, navigate]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [id]);
 
   if (loading) {
-    return <div style={{ padding: 20 }}>Joining session...</div>;
+    return <div style={{ padding: 20 }}>Connecting to session...</div>;
   }
 
-  if (!data?.livekit_url || !data?.token) {
-    return <div style={{ padding: 20 }}>Failed to load session.</div>;
+  if (error || !sessionData?.livekit_url || !sessionData?.token) {
+    return (
+      <div style={{ padding: 20 }}>
+        <p>{error || "Session unavailable."}</p>
+        <button onClick={() => navigate(-1)}>Go Back</button>
+      </div>
+    );
   }
 
   return (
     <LiveKitRoom
-      serverUrl={data.livekit_url}
-      token={data.token}
+      serverUrl={sessionData.livekit_url}
+      token={sessionData.token}
       connect={true}
-      video={true}   // teacher always has video
+      video={true}
       audio={true}
     >
-      <ClassroomUI role="TEACHER" />
+      <ClassroomUI role="teacher" />
       <TeacherControls />
       <RoomAudioRenderer />
     </LiveKitRoom>
