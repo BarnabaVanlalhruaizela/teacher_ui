@@ -2,6 +2,8 @@ import { useTracks, VideoTrack } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import ParticipantsPanel from "./ParticipantsPanel";
 import ChatPanel from "./ChatPanel";
+import TeacherControls from "./TeacherControls";
+
 import { useState } from "react";
 
 export default function ClassroomUI({ role }) {
