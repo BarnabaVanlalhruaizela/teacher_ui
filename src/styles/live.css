@@ -19,6 +19,8 @@
   --r12: 12px;
 }
 
+/* PARENT LAYOUT FIX */
+
 .studentLayout__right{
   height: 100vh;
   display: flex;
@@ -29,7 +31,7 @@
 .studentLayout__page:has(.classroom-layout){
   flex: 1;
   min-height: 0;
-  overflow-y: auto !important;
+  overflow: hidden !important;
   display: flex !important;
   padding: 14px !important;
 }
@@ -40,9 +42,11 @@
   display: flex;
 }
 
+/*MAIN CLASSROOM LAYOUT*/
+
 .classroom-layout{
   flex: 1;
-  min-height: calc(100vh - 90px);
+  min-height: 0;
   display: grid;
   grid-template-columns: 1fr 360px;
   gap: 14px;
@@ -51,23 +55,12 @@
 
 .main-stage{
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
   position: relative;
+  overflow: hidden;
 }
 
 .main-stage.full-width{
   grid-column: 1 / -1;
-}
-
-.video-wrapper{
-  flex: 1;
-  min-height: 560px;
-  overflow: hidden;
-  border-radius: var(--r20);
-  box-shadow: var(--shadow);
-  background: var(--dark);
 }
 
 .main-stage video{
@@ -77,6 +70,7 @@
   object-fit: cover;
   background: var(--dark);
   border-radius: var(--r20);
+  box-shadow: var(--shadow);
 }
 
 /* top chat toggle */
@@ -99,6 +93,8 @@
 .toggle-sidebar-btn:hover{
   background: rgba(15,23,32,0.82);
 }
+
+/* RIGHT SIDEBAR*/
 
 .right-sidebar{
   min-height: 0;
@@ -126,6 +122,8 @@
   flex-direction: column;
 }
 
+/* WAITING SCREEN*/
+
 .waiting-screen{
   height: 100vh;
   display: flex;
@@ -143,6 +141,8 @@
   color: var(--text);
   margin: 0;
 }
+
+/*  PARTICIPANTS PANEL */
 
 .participants-wrapper{
   display: flex;
@@ -218,6 +218,8 @@
   margin-left: 8px;
   font-size: 16px;
 }
+
+/* CHAT PANEL*/
 
 .chat-panel{
   height: 100%;
@@ -311,56 +313,65 @@
   transform: translateY(-1px);
 }
 
+/* TEACHER / LIVE CONTROLS*/
+
+.control-bar,
 .teacher-controls{
-  position: static;
-  transform: none;
-  margin: 0 auto;
-  width: fit-content;
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: rgba(15, 23, 32, 0.88);
+  background: rgba(15, 23, 32, 0.78);
+  backdrop-filter: blur(10px);
   border-radius: 999px;
+  z-index: 40;
   box-shadow: 0 10px 24px rgba(0,0,0,.25);
 }
 
+/* works for buttons inside both control-bar and teacher-controls */
+.control-bar button,
 .teacher-controls .control-btn{
   border: none;
   outline: none;
-  min-width: 125px;
-  height: 48px;
-  padding: 0 18px;
+  min-width: 110px;
+  height: 44px;
+  padding: 0 16px;
   border-radius: 999px;
   background: rgba(255,255,255,0.12);
   color: #fff;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
+.control-bar button:hover,
 .teacher-controls .control-btn:hover{
   background: rgba(255,255,255,0.22);
   transform: translateY(-1px);
 }
 
+.control-bar button:active,
 .teacher-controls .control-btn:active{
   transform: translateY(0);
 }
 
-.teacher-controls .control-btn.off{
-  background: #8b0000;
+/* off state */
+.control-btn.off{
+  background: #8b0000 !important;
 }
 
+/* leave button */
+.control-bar button:last-child,
 .teacher-controls .end-call-btn{
   background: var(--danger);
 }
 
+.control-bar button:last-child:hover,
 .teacher-controls .end-call-btn:hover{
   background: var(--danger-hover);
 }
@@ -378,16 +389,14 @@
     height: calc(100vh - 94px);
     z-index: 50;
   }
-
-  .video-wrapper{
-    min-height: 420px;
-  }
 }
 
 @media (max-width: 768px){
+  .control-bar,
   .teacher-controls{
-    width: 100%;
-    max-width: 100%;
+    bottom: 14px;
+    width: calc(100% - 24px);
+    max-width: 520px;
     padding: 10px;
     gap: 8px;
     flex-wrap: wrap;
@@ -395,9 +404,10 @@
     border-radius: 18px;
   }
 
+  .control-bar button,
   .teacher-controls .control-btn{
-    min-width: 100px;
-    height: 42px;
+    min-width: 90px;
+    height: 40px;
     font-size: 13px;
     padding: 0 12px;
   }
