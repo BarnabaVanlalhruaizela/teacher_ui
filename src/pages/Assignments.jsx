@@ -54,6 +54,7 @@ export default function Assignments() {
 
       <div className="assignments-title-container">
         <h2 className="assignments-title">Assignments</h2>
+
         <div className="assignments-search">
           <input type="text" placeholder="Search" />
           <FiSearch className="assignments-search-icon" />
@@ -61,6 +62,7 @@ export default function Assignments() {
       </div>
 
       <div className="assignments-list-container">
+
         <div className="assignments-actions">
           <button
             className="assignments-create-btn"
@@ -73,16 +75,19 @@ export default function Assignments() {
         </div>
 
         <div className="assignments-list">
+
           {assignments.length === 0 && (
             <div>No assignments created yet.</div>
           )}
 
           {assignments.map((assignment) => (
             <div className="assignment-row" key={assignment.id}>
+
               <div className="assignment-info">
                 <span className="assignment-id">
-                  {assignment.id.slice(0, 8)}
+                  {assignment.id?.slice(0, 8)}
                 </span>
+
                 <span className="assignment-name">
                   {assignment.title}
                 </span>
@@ -90,6 +95,7 @@ export default function Assignments() {
 
               <div className="assignment-detail">
                 <span className="assignment-label">Chapter:</span>
+
                 <span className="assignment-value">
                   {assignment.chapter_name}
                 </span>
@@ -97,6 +103,7 @@ export default function Assignments() {
 
               <div className="assignment-detail">
                 <span className="assignment-label">Due on:</span>
+
                 <span className="assignment-value">
                   {formatDate(assignment.due_date)}
                 </span>
@@ -104,6 +111,7 @@ export default function Assignments() {
 
               <div className="assignment-detail">
                 <span className="assignment-label">Submissions:</span>
+
                 <span className="assignment-value bold">
                   {assignment.total_submissions}
                 </span>
@@ -119,9 +127,11 @@ export default function Assignments() {
               >
                 View
               </button>
+
             </div>
           ))}
         </div>
+
       </div>
     </div>
   );

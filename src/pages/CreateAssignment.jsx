@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { IoChevronBack } from "react-icons/io5";
-import { FiSearch, FiCalendar } from "react-icons/fi";
 import toast from "react-hot-toast";
 import api from "../api/apiClient";
 import "../styles/create-assignment.css";
 
 export default function CreateAssignment() {
+
   const navigate = useNavigate();
   const { subjectId } = useParams();
   const { state: editData } = useLocation();
+
   const isEditing = !!editData;
 
   const [chapters, setChapters] = useState([]);
@@ -19,8 +20,10 @@ export default function CreateAssignment() {
   const [dueDate, setDueDate] = useState(
     editData?.due_date?.slice(0, 10) || ""
   );
+
   const [file, setFile] = useState(null);
   const [errors, setErrors] = useState({});
+
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function CreateAssignment() {
         const res = await api.get(`/courses/subject/${subjectId}/`);
         setChapters(res.data.chapters || []);
       } catch (err) {
-        console.error("Failed to load chapters", err);
+        console.error(err);
         toast.error("Failed to load chapters.");
       }
     }
@@ -39,23 +42,30 @@ export default function CreateAssignment() {
 
   const validate = () => {
     const newErrors = {};
+
     if (!chapterId) newErrors.chapter = "Chapter required";
     if (!title.trim()) newErrors.title = "Title required";
     if (!description.trim()) newErrors.description = "Description required";
     if (!dueDate) newErrors.dueDate = "Due date required";
     if (!file && !isEditing) newErrors.file = "File required";
+
     setErrors(newErrors);
+
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
+
     if (!validate()) return;
 
     try {
+
       const formData = new FormData();
+
       formData.append("chapter_id", chapterId);
       formData.append("title", title);
       formData.append("description", description);
+
       formData.append(
         "due_date",
         new Date(dueDate).toISOString()
@@ -66,18 +76,21 @@ export default function CreateAssignment() {
       }
 
       if (isEditing) {
+
         await api.patch(
-          `/assignments/${editData.id}/`,
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
+          `/assignments/teacher/${editData.id}/edit/`,
+          formData
         );
+
         toast.success("Assignment updated successfully");
+
       } else {
+
         await api.post(
           "/assignments/teacher/create/",
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
+          formData
         );
+
         toast.success("Assignment created successfully");
       }
 
@@ -86,7 +99,9 @@ export default function CreateAssignment() {
       }, 800);
 
     } catch (err) {
+
       console.error(err);
+
       toast.error(
         err.response?.data?.detail ||
         "Operation failed."
@@ -96,6 +111,7 @@ export default function CreateAssignment() {
 
   return (
     <div className="create-assignment-page">
+
       <button
         className="ca-back-btn"
         onClick={() => navigate(-1)}
@@ -105,9 +121,7 @@ export default function CreateAssignment() {
 
       <div className="ca-title-container">
         <h2>
-          {isEditing
-            ? "Edit Assignment"
-            : "Create Assignment"}
+          {isEditing ? "Edit Assignment" : "Create Assignment"}
         </h2>
       </div>
 
@@ -117,74 +131,105 @@ export default function CreateAssignment() {
           {/* Chapter */}
           <div className="ca-field">
             <label>Chapter</label>
+
             <select
               value={chapterId}
               onChange={(e) => setChapterId(e.target.value)}
               className={`ca-input ${errors.chapter ? "ca-input-error" : ""}`}
             >
+
               <option value="">Select Chapter</option>
+
               {chapters.map((ch) => (
                 <option key={ch.id} value={ch.id}>
                   {ch.title}
                 </option>
               ))}
+
             </select>
-            {errors.chapter && <span className="ca-error">{errors.chapter}</span>}
+
+            {errors.chapter && (
+              <span className="ca-error">{errors.chapter}</span>
+            )}
+
           </div>
 
           {/* Title */}
           <div className="ca-field">
             <label>Title</label>
+
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className={`ca-input ${errors.title ? "ca-input-error" : ""}`}
             />
-            {errors.title && <span className="ca-error">{errors.title}</span>}
+
+            {errors.title && (
+              <span className="ca-error">{errors.title}</span>
+            )}
+
           </div>
 
           {/* Description */}
           <div className="ca-field">
             <label>Description</label>
+
             <textarea
               rows={5}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className={`ca-textarea ${errors.description ? "ca-input-error" : ""}`}
             />
-            {errors.description && <span className="ca-error">{errors.description}</span>}
+
+            {errors.description && (
+              <span className="ca-error">{errors.description}</span>
+            )}
+
           </div>
 
           {/* Due Date */}
           <div className="ca-field">
             <label>Due Date</label>
+
             <input
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
               className={`ca-input ${errors.dueDate ? "ca-input-error" : ""}`}
             />
-            {errors.dueDate && <span className="ca-error">{errors.dueDate}</span>}
+
+            {errors.dueDate && (
+              <span className="ca-error">{errors.dueDate}</span>
+            )}
+
           </div>
 
           {/* File */}
           <div className="ca-field">
             <label>Attach File</label>
+
             <input
               type="file"
               ref={fileInputRef}
               hidden
               onChange={(e) => setFile(e.target.files[0])}
             />
+
             <button
+              type="button"
               onClick={() => fileInputRef.current.click()}
               className="ca-add-file-btn"
             >
               + Add File
             </button>
+
             {file && <span>{file.name}</span>}
-            {errors.file && <span className="ca-error">{errors.file}</span>}
+
+            {errors.file && (
+              <span className="ca-error">{errors.file}</span>
+            )}
+
           </div>
 
           {/* Submit */}
