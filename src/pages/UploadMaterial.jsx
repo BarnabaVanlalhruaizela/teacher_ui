@@ -12,6 +12,7 @@ export default function UploadMaterial() {
 
   const [title, setTitle] = useState("");
   const [files, setFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -20,59 +21,87 @@ export default function UploadMaterial() {
   };
 
   const handleFileChange = (e) => {
-    if (e.target.files.length > 0) {
-      setFiles((prev) => [...prev, ...Array.from(e.target.files)]);
+
+    const selected = Array.from(e.target.files || []);
+
+    if (selected.length > 0) {
+      setFiles((prev) => [...prev, ...selected]);
     }
+
     e.target.value = "";
   };
 
   const handleUpload = async () => {
 
-    if (!title.trim()) return;
+    if (!subjectId) {
+      console.error("Missing subjectId in URL");
+      return;
+    }
+
+    if (!title.trim()) {
+      alert("Please enter a title");
+      return;
+    }
+
+    if (files.length === 0) {
+      alert("Please attach at least one file");
+      return;
+    }
 
     try {
+
+      setUploading(true);
 
       const formData = new FormData();
 
       formData.append("title", title);
 
-      // send files using key "files" (matches Django view)
       files.forEach((file) => {
         formData.append("files", file);
       });
 
       await api.post(
         `/materials/chapters/${subjectId}/materials/upload/`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formData
       );
 
       navigate(-1);
 
     } catch (err) {
+
       console.error("Upload failed:", err);
+      alert("Upload failed");
+
+    } finally {
+
+      setUploading(false);
+
     }
 
   };
 
   return (
+
     <div className="upload-material-page">
 
-      <button className="um-back-btn" onClick={() => navigate(-1)}>
+      <button
+        className="um-back-btn"
+        onClick={() => navigate(-1)}
+      >
         <IoChevronBack /> Back
       </button>
 
       <div className="um-title-container">
-        <h2 className="um-title">Study Materials</h2>
+
+        <h2 className="um-title">
+          Study Materials
+        </h2>
 
         <div className="um-search">
           <input type="text" placeholder="Search" />
           <FiSearch className="um-search-icon" />
         </div>
+
       </div>
 
       <div className="um-form-container">
@@ -132,8 +161,9 @@ export default function UploadMaterial() {
           <button
             className="um-upload-btn"
             onClick={handleUpload}
+            disabled={uploading}
           >
-            Upload
+            {uploading ? "Uploading..." : "Upload"}
           </button>
 
         </div>
@@ -141,5 +171,7 @@ export default function UploadMaterial() {
       </div>
 
     </div>
+
   );
+
 }
