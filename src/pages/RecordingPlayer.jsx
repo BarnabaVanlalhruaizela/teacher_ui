@@ -13,23 +13,36 @@ export default function RecordingPlayer() {
       .get(`/courses/recordings/${recordingId}/progress/`)
       .then(res => {
 
-        const startTime = res.data.last_position;
+        const startTime = res.data.last_position || 0;
 
-        const player = iframeRef.current;
-
-        player.src =
+        iframeRef.current.src =
           `https://iframe.mediadelivery.net/embed/615730/${videoId}?start=${Math.floor(startTime)}`;
+
+      })
+      .catch(() => {
+
+        iframeRef.current.src =
+          `https://iframe.mediadelivery.net/embed/615730/${videoId}`;
 
       });
 
   }, [recordingId, videoId]);
 
   return (
-    <iframe
-      ref={iframeRef}
-      width="100%"
-      height="500"
-      allowFullScreen
-    />
+
+    <div style={{ padding: "20px" }}>
+
+      <iframe
+        ref={iframeRef}
+        width="100%"
+        height="600"
+        allow="autoplay; fullscreen"
+        allowFullScreen
+        style={{ border: "none", borderRadius: "10px" }}
+      />
+
+    </div>
+
   );
+
 }
