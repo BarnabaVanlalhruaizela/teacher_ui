@@ -17,7 +17,7 @@ export default function Quizzes() {
         const res = await api.get(
           `/teacher/subjects/${subjectId}/quizzes/`
         );
-
+          console.log("QUIZ DATA:", res.data);
         setQuizzes(res.data.results || res.data);
       } catch (err) {
         console.error("Failed to load quizzes", err);
@@ -91,7 +91,8 @@ export default function Quizzes() {
 
                 {/* Optional: show short ID */}
                 <span className="quiz-name">ID: {quiz.id.slice(0,8)}</span>
-
+                
+                <span className="quiz-creator">{quiz.teacher_name || quiz.created_by_email}</span>
               </div>
 
               <div className="quiz-detail">
