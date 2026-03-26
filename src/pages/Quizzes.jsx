@@ -3,46 +3,43 @@ import { useNavigate, useParams } from "react-router-dom";
 import { IoChevronBack } from "react-icons/io5";
 import { FiSearch } from "react-icons/fi";
 import "../styles/quizzes.css";
-import api from "../api/apiClient"; 
+import api from "../api/apiClient";
 
 export default function Quizzes() {
   const navigate = useNavigate();
   const { subjectId } = useParams();
 
   const [quizzes, setQuizzes] = useState([]);
+  const [publishingId, setPublishingId] = useState(null);
 
   useEffect(() => {
     async function fetchQuizzes() {
       try {
-        const res = await api.get(
-          `/teacher/subjects/${subjectId}/quizzes/`
-        );
-          console.log("QUIZ DATA:", res.data);
+        const res = await api.get(`/teacher/subjects/${subjectId}/quizzes/`);
+        console.log("QUIZ DATA:", res.data);
         setQuizzes(res.data.results || res.data);
       } catch (err) {
         console.error("Failed to load quizzes", err);
       }
     }
-
     fetchQuizzes();
   }, [subjectId]);
 
   const handlePublish = async (quizId) => {
-  try {
-    await api.patch(`/teacher/quizzes/${quizId}/publish/`);
+    setPublishingId(quizId);
+    try {
+      await api.patch(`/teacher/quizzes/${quizId}/publish/`);
+      const res = await api.get(`/teacher/subjects/${subjectId}/quizzes/`);
+      setQuizzes(res.data.results || res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to publish quiz");
+    } finally {
+      setPublishingId(null);
+    }
+  };
 
-    alert("Quiz published successfully");
-
-    // refresh list
-    const res = await api.get(`/teacher/subjects/${subjectId}/quizzes/`);
-    setQuizzes(res.data.results || res.data);
-
-  } catch (err) {
-    console.error(err);
-    alert("Failed to publish quiz");
-  }
-};
-const handleDelete = async (quizId) => {
+  const handleDelete = async (quizId) => {
     if (!window.confirm("Are you sure you want to delete this quiz?")) return;
     try {
       await api.delete(`/teacher/quizzes/${quizId}/`);
@@ -52,7 +49,6 @@ const handleDelete = async (quizId) => {
       alert("Failed to delete quiz");
     }
   };
-
 
   return (
     <div className="quizzes-page">
@@ -76,11 +72,7 @@ const handleDelete = async (quizId) => {
         <div className="quizzes-actions">
           <button
             className="quizzes-create-btn"
-            onClick={() =>
-              navigate(
-                `/teacher/classes/${subjectId}/quizzes/create`
-              )
-            }
+            onClick={() => navigate(`/teacher/classes/${subjectId}/quizzes/create`)}
           >
             + Create New Quiz
           </button>
@@ -95,64 +87,48 @@ const handleDelete = async (quizId) => {
 
           {quizzes.map((quiz, index) => (
             <div className="quiz-row" key={quiz.id || index}>
+
               <div className="quiz-info">
-
-                {/* FIX 1 — show title instead of UUID */}
                 <span className="quiz-id">{quiz.title}</span>
-
-                {/* Optional: show short ID */}
-                <span className="quiz-name">ID: {quiz.id.slice(0,8)}</span>
-                
+                <span className="quiz-name">ID: {quiz.id.slice(0, 8)}</span>
                 <span className="quiz-creator">{quiz.teacher_name || quiz.created_by_email}</span>
               </div>
 
               <div className="quiz-detail">
                 <span className="quiz-label">Created:</span>
-
-                {/* FIX 2 — use created_at */}
                 <span className="quiz-value">
-                  {quiz.created_at
-                    ? new Date(quiz.created_at).toLocaleString()
-                    : "-"}
+                  {quiz.created_at ? new Date(quiz.created_at).toLocaleString() : "-"}
                 </span>
               </div>
 
               <div className="quiz-detail">
                 <span className="quiz-label">Questions:</span>
-
-                {/* FIX 3 — use questions_count */}
-                <span className="quiz-value bold">
-                  {quiz.questions_count ?? 0}
-                </span>
+                <span className="quiz-value bold">{quiz.questions_count ?? 0}</span>
               </div>
 
-              <div style={{ display: "flex", gap: "10px" }}>
-            <button
-               className="quiz-view-btn"
-               onClick={() =>
-                navigate(
-                   `/teacher/classes/${subjectId}/quizzes/${quiz.id}`
-                )
-               }
-            >
-            View
-            </button>
+              <div className="quiz-actions">
+                <button
+                  className="quiz-view-btn"
+                  onClick={() =>
+                    navigate(`/teacher/classes/${subjectId}/quizzes/${quiz.id}`)
+                  }
+                >
+                  View
+                </button>
 
-             {!quiz.is_published && (
-             <button
-                className="quiz-publish-btn"
-                onClick={() => handlePublish(quiz.id)}
-             >
-              Publish
-             </button>
-             )}
+                {quiz.is_published ? (
+                  <span className="quiz-published-badge">✓ Published</span>
+                ) : (
+                  <button
+                    className={`quiz-publish-btn ${publishingId === quiz.id ? "loading" : ""}`}
+                    onClick={() => handlePublish(quiz.id)}
+                    disabled={publishingId === quiz.id}
+                  >
+                    {publishingId === quiz.id ? "Publishing…" : "Publish"}
+                  </button>
+                )}
+              </div>
 
-            {quiz.is_published && (
-              <span style={{ color: "green", fontWeight: "600" }}>
-              Published
-            </span>
-            )}
-            </div>
             </div>
           ))}
         </div>
